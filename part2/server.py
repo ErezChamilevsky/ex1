@@ -32,7 +32,6 @@ def load_zone_file(file_path):
     except Exception as e:
         print(f" {e}")
 
-    print(f"loading zone ended. there are {len(mappings)} lines")
     return mappings
 
 
