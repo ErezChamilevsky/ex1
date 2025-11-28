@@ -1,3 +1,4 @@
 biu.ac.il,1.2.3.4,A
-.co.il,127.0.0.1:777,NS
+.co.il,1.2.3.4:333,NS
+google.co.il,127.0.0.1:777,NS
 example.com,1.2.3.7,A
