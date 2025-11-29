@@ -35,42 +35,41 @@ def load_zone_file(file_path):
     return mappings
 
 
-# Answering the query
+# answering the query
 def resolve_domain(domain_query, mappings):
 
     if domain_query in mappings:
         ip_info, record_type = mappings[domain_query]
         return f"{domain_query},{ip_info},{record_type}"
 
-    ####### starting adjustment####
     best_ns_match = None
     longest_match_length = -1
 
-    # Iterate over all mappings to find the longest matching NS record
+    # iterate over all mappings to find the longest matching NS record
     for domain, (ip_info, record_type) in mappings.items():
         if record_type == "NS":
             is_match = False
             ns_match_domain = ""
 
-            # Case 1: Zone entry starts with a dot (e.g., '.co.il')
+            # case 1: zone entry starts with a dot 
             if domain.startswith("."):
                 ns_suffix = domain[1:]
-                # Check if the query ends with the suffix and is not the suffix itself
+                # check if the query ends with the suffix and is not the suffix itself
                 if domain_query.endswith(ns_suffix) and domain_query != ns_suffix:
-                    # Ensure the match is a full domain component (e.g., mail.google.co.il matches co.il, but not gco.il)
+                    # ensure the match is a full domain component 
                     if domain_query == ns_suffix or domain_query.endswith(
                         "." + ns_suffix
                     ):
                         is_match = True
                         ns_match_domain = ns_suffix
 
-            # Case 2: Zone entry does not start with a dot (e.g., 'co.il')
+            # case 2: zone entry does not start with a dot 
             elif domain_query.endswith("." + domain):
                 is_match = True
                 ns_match_domain = domain
 
             if is_match:
-                # Check if this is the longest match found so far
+                # check if this is the longest match found so far
                 current_match_length = len(ns_match_domain)
                 if current_match_length > longest_match_length:
                     longest_match_length = current_match_length
@@ -78,11 +77,10 @@ def resolve_domain(domain_query, mappings):
                     response_domain = ns_match_domain + "."
                     best_ns_match = f"{response_domain},{ip_info},{record_type}"
 
-    # If a valid NS match was found, return the result for the longest one
+    # if a valid NS match was found, return the result for the longest one
     if best_ns_match:
         return best_ns_match
 
-    ##### ending adjustment ####
     return "non-existent domain"
 
 
