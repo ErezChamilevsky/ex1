@@ -57,31 +57,32 @@ while True:
 
         # domain doesn't exist
         if response == "non-existent domain":
+            cache[domain] = ("non-existent domain", time.time())
             resolver_sock.sendto(response.encode("utf-8"), client_addr)
             break
-        
+
         # response format: domain,ip_info,type
         try:
             resp_domain, ip_info, record_type = response.split(",")
         except:
             resolver_sock.sendto("non-existent domain".encode("utf-8"), client_addr)
             break
-        
+
         # case "A"
         if record_type == "A":
             cache[domain] = (response, time.time())
             resolver_sock.sendto(response.encode("utf-8"), client_addr)
             break
-        
+
         # case "NS"
         if record_type == "NS":
             next_ip, next_port = split_ip_port(ip_info)
-            
+
             if next_port is None:
-                # NS without port 
+                # NS without port
                 resolver_sock.sendto("non-existent domain".encode("utf-8"), client_addr)
                 break
-            
+
             # move on to the next server
             current_ip = next_ip
             current_port = next_port
